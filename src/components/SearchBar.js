@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import * as Scroll from 'react-scroll';
 
-const SearchBar = ({ updateSearchTerm, updateSearchResults, page, updatePage, updateNumOfPages, isLoading, updateIsLoading }) => {
+const SearchBar = ({ updateSearchTerm, updateSearchResults, page, updatePage, updateNumOfPages, updateIsLoading }) => {
     const [searchStr, setSearchStr] = useState("");
     const Element = Scroll.Element;
     const handleChange = (e) => {

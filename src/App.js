@@ -53,7 +53,7 @@ function App() {
     <div>
       <AppHeader updateSearchTerm={updateSearchTerm} searchTerm={searchTerm} updateSearchResults={updateSearchResults}
         page={page} updatePage={updatePage} updateNumOfPages={updateNumOfPages} numOfPages={numOfPages}
-        isLoading={isLoading} updateIsLoading={updateIsLoading}
+        updateIsLoading={updateIsLoading}
       />
       <FiveNominationsToast nominatedMovies={nominatedMovies} />
       <Container>
@@ -62,7 +62,7 @@ function App() {
             nominatedMovies={nominatedMovies} updatePage={updatePage} page={page}
             updateSearchResults={updateSearchResults} searchTerm={searchTerm}
             updateNumOfPages={updateNumOfPages} numOfPages={numOfPages}
-            isLoading={isLoading} updateIsLoading={updateIsLoading} />
+            isLoading={isLoading} />
           <NominatedMovies nominatedMovies={nominatedMovies}
             clearNominatedMovies={clearNominatedMovies} updateNominatedMovies={updateNominatedMovies}
           />
