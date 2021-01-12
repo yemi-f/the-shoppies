@@ -72,7 +72,8 @@ const MoviesTable = ({ searchResults = [], updateNominatedMovies, nominatedMovie
                     <h3>results for "{searchTerm}"</h3>
                     <NavButtons searchTerm={searchTerm} handlePageNumClick={handlePageNumClick}
                         page={page} numOfPages={numOfPages} scrollToComponent={scrollToComponent}
-                        updateSearchResults={updateSearchResults} updatePage={updatePage} searchResults={searchResults} />
+                        updateSearchResults={updateSearchResults} updatePage={updatePage}
+                        searchResults={searchResults} hidePageNumbering={false} />
                 </div>
                 : searchTerm.length > 0 && <p className="lead text-center py-2">We couldn't find anything matching "{searchTerm}"</p>
             }
@@ -86,17 +87,17 @@ const MoviesTable = ({ searchResults = [], updateNominatedMovies, nominatedMovie
             })}
             <NavButtons searchTerm={searchTerm} handlePageNumClick={handlePageNumClick}
                 page={page} numOfPages={numOfPages} scrollToComponent={scrollToComponent} searchResults={searchResults}
-                updateSearchResults={updateSearchResults} updatePage={updatePage} />
+                updateSearchResults={updateSearchResults} updatePage={updatePage} hidePageNumbering={true} />
         </>
     )
 }
 
-const NavButtons = ({ numOfPages, page, handlePageNumClick, searchResults }) => {
+const NavButtons = ({ numOfPages, page, handlePageNumClick, searchResults, hidePageNumbering }) => {
     return (
         <>
             {searchResults.length > 0 &&
                 <>
-                    <span>Page {page} of {numOfPages}</span>
+                    {!hidePageNumbering && <span>Page {page} of {numOfPages}</span>}
                     <Row className="my-3">
                         <Col xs={6} className="pl-3 pr-1">
                             <Button variant="dark" disabled={page <= 1} block onClick={() => handlePageNumClick(page - 1)}>
