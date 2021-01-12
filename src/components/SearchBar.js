@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import * as Scroll from 'react-scroll';
 
-const SearchBar = ({ updateSearchTerm, updateSearchResults, page, updatePage, updateNumOfPages, getMovies }) => {
+const SearchBar = ({ updateSearchTerm, updateSearchResults, page, updatePage, updateNumOfPages, isLoading, updateIsLoading }) => {
     const [searchStr, setSearchStr] = useState("");
     const Element = Scroll.Element;
     const handleChange = (e) => {
@@ -13,6 +13,7 @@ const SearchBar = ({ updateSearchTerm, updateSearchResults, page, updatePage, up
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        updateIsLoading(true);
         updateSearchTerm(searchStr.trim())
 
         await axios
@@ -21,8 +22,12 @@ const SearchBar = ({ updateSearchTerm, updateSearchResults, page, updatePage, up
                 updateSearchResults(res.data.Search)
                 updateNumOfPages(Math.ceil(parseInt(res.data.totalResults) / 10));
                 updatePage(1);
+                updateIsLoading(false)
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                updateIsLoading(false)
+            })
     }
 
     return (

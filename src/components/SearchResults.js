@@ -1,12 +1,13 @@
-import React from 'react';
-import { Col, Button, Row } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Col, Button, Row, Spinner } from 'react-bootstrap';
 import MovieRow from './MovieRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import * as Scroll from 'react-scroll';
 
 const SearchResults = ({ searchResults = [], updateNominatedMovies, nominatedMovies, searchTerm, updatePage, updateSearchResults, page,
-    numOfPages }) => {
+    numOfPages, isLoading, updateIsLoading }) => {
+    const [isNextPageLoading, setIsNextPageLoading] = useState(false);
     const scroller = Scroll.scroller;
     const scrollToComponent = () => {
         scroller.scrollTo('target', {
@@ -17,6 +18,7 @@ const SearchResults = ({ searchResults = [], updateNominatedMovies, nominatedMov
     }
 
     const handlePageNumClick = async (num) => {
+        setIsNextPageLoading(true);
         if (num < 1) num = 1;
         else if (num > numOfPages) num = numOfPages
 
@@ -25,37 +27,58 @@ const SearchResults = ({ searchResults = [], updateNominatedMovies, nominatedMov
             .then(res => {
                 updateSearchResults(res.data.Search);
                 updatePage(num);
-                scrollToComponent()
+                scrollToComponent();
+                setIsNextPageLoading(false);
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                console.log(err);
+                updateIsLoading(false);
+                setIsNextPageLoading(false);
+            })
     }
 
     return (
         <Col xs={12} md={6}>
             <>
                 {searchTerm.length === 0 && <p className="lead text-center py-2">Start by searching for a movie</p>}
-                {searchResults.length > 0 ?
-                    <div className="py-2">
-                        <h3>results for "{searchTerm}"</h3>
+                {isLoading ?
+                    <LoadingSpinner />
+                    :
+                    <>
+                        {searchResults.length > 0 ?
+                            <div className="py-2">
+                                <h3>results for "{searchTerm}"</h3>
+                                <NavButtons searchTerm={searchTerm} handlePageNumClick={handlePageNumClick}
+                                    page={page} numOfPages={numOfPages} scrollToComponent={scrollToComponent}
+                                    updateSearchResults={updateSearchResults} updatePage={updatePage} searchResults={searchResults} />
+                            </div>
+                            : searchTerm.length > 0 && <p className="lead text-center py-2">We couldn't find anything matching "{searchTerm}"</p>
+                        }
+                        {searchResults.map((movie, index) => {
+                            return (
+                                <MovieRow key={index} movie={movie} updateNominatedMovies={updateNominatedMovies}>
+                                    <NominateButton updateNominatedMovies={updateNominatedMovies}
+                                        nominatedMovies={nominatedMovies} movie={movie} />
+                                </MovieRow>
+                            )
+                        })}
                         <NavButtons searchTerm={searchTerm} handlePageNumClick={handlePageNumClick}
-                            page={page} numOfPages={numOfPages} scrollToComponent={scrollToComponent}
-                            updateSearchResults={updateSearchResults} updatePage={updatePage} searchResults={searchResults} />
-                    </div>
-                    : searchTerm.length > 0 && <p className="lead text-center py-2">We couldn't find anything matching "{searchTerm}"</p>
+                            page={page} numOfPages={numOfPages} scrollToComponent={scrollToComponent} searchResults={searchResults}
+                            updateSearchResults={updateSearchResults} updatePage={updatePage} />
+                    </>
                 }
-                {searchResults.map((movie, index) => {
-                    return (
-                        <MovieRow key={index} movie={movie} updateNominatedMovies={updateNominatedMovies}>
-                            <NominateButton updateNominatedMovies={updateNominatedMovies}
-                                nominatedMovies={nominatedMovies} movie={movie} />
-                        </MovieRow>
-                    )
-                })}
             </>
-            <NavButtons searchTerm={searchTerm} handlePageNumClick={handlePageNumClick}
-                page={page} numOfPages={numOfPages} scrollToComponent={scrollToComponent} searchResults={searchResults}
-                updateSearchResults={updateSearchResults} updatePage={updatePage} />
         </Col>
+    )
+}
+
+const LoadingSpinner = () => {
+    return (
+        <div className="text-center my-4">
+            <Spinner animation="border" role="status">
+                <span className="sr-only">Loading...</span>
+            </Spinner>
+        </div>
     )
 }
 

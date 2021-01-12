@@ -17,10 +17,13 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [nominatedMovies, setNominatedMovies] = useState([]);
   const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const updatePage = (pageNum) => {
     setPage(pageNum);
   }
+
+  const updateIsLoading = (bool) => setIsLoading(bool);
 
   const [numOfPages, setNumOfPages] = useState(0);
 
@@ -49,14 +52,17 @@ function App() {
   return (
     <div>
       <AppHeader updateSearchTerm={updateSearchTerm} searchTerm={searchTerm} updateSearchResults={updateSearchResults}
-        page={page} updatePage={updatePage} updateNumOfPages={updateNumOfPages} numOfPages={numOfPages} />
+        page={page} updatePage={updatePage} updateNumOfPages={updateNumOfPages} numOfPages={numOfPages}
+        isLoading={isLoading} updateIsLoading={updateIsLoading}
+      />
       <FiveNominationsToast nominatedMovies={nominatedMovies} />
       <Container>
         <Row>
           <SearchResults searchResults={searchResults} updateNominatedMovies={updateNominatedMovies}
             nominatedMovies={nominatedMovies} updatePage={updatePage} page={page}
             updateSearchResults={updateSearchResults} searchTerm={searchTerm}
-            updateNumOfPages={updateNumOfPages} numOfPages={numOfPages} />
+            updateNumOfPages={updateNumOfPages} numOfPages={numOfPages}
+            isLoading={isLoading} updateIsLoading={updateIsLoading} />
           <NominatedMovies nominatedMovies={nominatedMovies}
             clearNominatedMovies={clearNominatedMovies} updateNominatedMovies={updateNominatedMovies}
           />
