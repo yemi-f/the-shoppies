@@ -2,6 +2,13 @@
 
 https://quizzical-carson-e10e5f.netlify.app/
 
+# Setup
+- get an API key from http://www.omdbapi.com/
+- Create an environement varaible in the root folder `REACT_APP_API_URL`=https://www.omdbapi.com/?apikey=abcde&type=movie
+where abcde is your api key
+
+https://quizzical-carson-e10e5f.netlify.app/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
