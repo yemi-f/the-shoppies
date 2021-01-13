@@ -1,3 +1,11 @@
+# The Shoppies
+## Description
+The app allows a visitor to search the [OMDB](https://www.omdbapi.com/) API for movies and nominate up to 5 different movies. A visitor is also allowed to remove a movie from their list of nominated movies. Nominations are saved when they leave the page.
+
+A toast notifies the visitor when they have nominated 5 movies.
+
+Built with [ReactJS](https://reactjs.org/)
+
 # Live Demo
 
 https://quizzical-carson-e10e5f.netlify.app/
