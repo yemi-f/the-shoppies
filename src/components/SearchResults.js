@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Button, Row, Spinner } from 'react-bootstrap';
 import MovieRow from './MovieRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import * as Scroll from 'react-scroll';
 
-const SearchResults = ({ searchResults = [], updateNominatedMovies, nominatedMovies, searchTerm, updatePage, updateSearchResults, page,
-    numOfPages, isLoading, updateIsLoading }) => {
+const SearchResults = ({
+    updateNominatedMovies, nominatedMovies, searchTerm, updatePage, page,
+    showSpinner, updateShowSpinner
+}) => {
+    const [searchResults, setSearchResults] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [numOfPages, setNumOfPages] = useState(0);
+
     const scroller = Scroll.scroller;
-    const scrollToComponent = () => {
+    const scrollToSearchBar = () => {
         scroller.scrollTo('target', {
             duration: 200,
             smooth: true,
@@ -16,39 +22,46 @@ const SearchResults = ({ searchResults = [], updateNominatedMovies, nominatedMov
         })
     }
 
-    const handlePageNumClick = async (num) => {
+    const handlePageNumClick = (num) => {
+        setIsLoading(true);
+
         if (num < 1) num = 1;
         else if (num > numOfPages) num = numOfPages
 
-        await axios
-            .get(`${process.env.REACT_APP_API_URL}&s=${searchTerm}&page=${num}`)
-            .then(res => {
-                updateSearchResults(res.data.Search);
-                updatePage(num);
-                scrollToComponent();
-            })
-            .catch(err => {
-                console.log(err);
-                updateIsLoading(false);
-            })
+        updatePage(num);
+        setIsLoading(false);
+        scrollToSearchBar();
     }
+
+    useEffect(() => {
+        const getMovies = async () => {
+            setIsLoading(true)
+            try {
+                const res = await axios.get(`${process.env.REACT_APP_API_URL}&s=${searchTerm}&page=${page}`);
+                setSearchResults(res.data.Search);
+                setNumOfPages(Math.ceil(parseInt(res.data.totalResults) / 10));
+                setIsLoading(false);
+                updateShowSpinner(false);
+            } catch (error) {
+                console.log(error);
+                setIsLoading(false);
+                updateShowSpinner(false);
+            }
+        }
+
+        getMovies();
+    }, [page, searchTerm, updateShowSpinner])
 
     return (
         <Col xs={12} md={6}>
-            <>
-                {searchTerm.length === 0 && <p className="lead text-center py-2">Start by searching for a movie</p>}
-                {isLoading ?
-                    <LoadingSpinner show={isLoading} />
-                    :
-                    <>
-                        <MoviesTable updateNominatedMovies={updateNominatedMovies}
-                            nominatedMovies={nominatedMovies} searchResults={searchResults}
-                            searchTerm={searchTerm} numOfPages={numOfPages} page={page}
-                            handlePageNumClick={handlePageNumClick} scrollToComponent={scrollToComponent}
-                        />
-                    </>
-                }
-            </>
+            {searchTerm.length === 0
+                ? <p className="lead text-center py-2">Start by searching for a movie</p>
+                : <MoviesTable updateNominatedMovies={updateNominatedMovies}
+                    nominatedMovies={nominatedMovies} searchResults={searchResults}
+                    searchTerm={searchTerm} numOfPages={numOfPages} page={page}
+                    handlePageNumClick={handlePageNumClick}
+                    isLoading={isLoading} showSpinner={showSpinner}
+                />}
         </Col>
     )
 }
@@ -63,39 +76,43 @@ const LoadingSpinner = () => {
     )
 }
 
-const MoviesTable = ({ searchResults = [], updateNominatedMovies, nominatedMovies, searchTerm, updatePage, updateSearchResults, page,
-    numOfPages, handlePageNumClick, scrollToComponent }) => {
+const MoviesTable = ({ searchResults = [], updateNominatedMovies, nominatedMovies, searchTerm, page,
+    numOfPages, handlePageNumClick, isLoading, showSpinner }) => {
     return (
         <>
-            {searchResults.length > 0 ?
-                <div className="py-2">
-                    <h3>results for "{searchTerm}"</h3>
-                    <NavButtons searchTerm={searchTerm} handlePageNumClick={handlePageNumClick}
-                        page={page} numOfPages={numOfPages} scrollToComponent={scrollToComponent}
-                        updateSearchResults={updateSearchResults} updatePage={updatePage}
-                        searchResults={searchResults} hidePageNumbering={false} />
-                </div>
-                : searchTerm.length > 0 && <p className="lead text-center py-2">We couldn't find anything matching "{searchTerm}"</p>
+            {showSpinner
+                ? <LoadingSpinner />
+                : <>
+                    {searchResults.length > 0
+                        ? <div className="py-2">
+                            <h3>results for "{searchTerm}"</h3>
+                            <NavButtons handlePageNumClick={handlePageNumClick}
+                                page={page} numOfPages={numOfPages}
+                                searchResults={searchResults} hidePageNumbering={false} />
+                        </div>
+                        : searchTerm.length > 0 && !showSpinner && <p className="lead text-center py-2">We couldn't find anything matching "{searchTerm}"</p>
+                    }
+                    {searchResults.map((movie, index) => {
+                        return (
+                            <MovieRow key={index} movie={movie} updateNominatedMovies={updateNominatedMovies}>
+                                <NominateButton updateNominatedMovies={updateNominatedMovies}
+                                    nominatedMovies={nominatedMovies} movie={movie} />
+                            </MovieRow>
+                        )
+                    })}
+                </>
             }
-            {searchResults.map((movie, index) => {
-                return (
-                    <MovieRow key={index} movie={movie} updateNominatedMovies={updateNominatedMovies}>
-                        <NominateButton updateNominatedMovies={updateNominatedMovies}
-                            nominatedMovies={nominatedMovies} movie={movie} />
-                    </MovieRow>
-                )
-            })}
-            <NavButtons searchTerm={searchTerm} handlePageNumClick={handlePageNumClick}
-                page={page} numOfPages={numOfPages} scrollToComponent={scrollToComponent} searchResults={searchResults}
-                updateSearchResults={updateSearchResults} updatePage={updatePage} hidePageNumbering={true} />
+            <NavButtons handlePageNumClick={handlePageNumClick}
+                page={page} numOfPages={numOfPages} searchResults={searchResults}
+                hidePageNumbering={true} isLoading={isLoading} />
         </>
     )
 }
 
-const NavButtons = ({ numOfPages, page, handlePageNumClick, searchResults, hidePageNumbering }) => {
+const NavButtons = ({ numOfPages, page, handlePageNumClick, searchResults, hidePageNumbering, isLoading }) => {
     return (
         <>
-            {searchResults.length > 0 &&
+            {searchResults.length > 0 && !isLoading &&
                 <>
                     {!hidePageNumbering && <span>Page {page} of {numOfPages}</span>}
                     <Row className="my-3">

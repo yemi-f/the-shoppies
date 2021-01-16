@@ -7,29 +7,23 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faTimes, faTrash, faCheck, faPlus,
-  faChevronLeft, faChevronRight, faSearch
+  faChevronLeft, faChevronRight
 } from "@fortawesome/free-solid-svg-icons";
 library.add(faTimes, faTrash, faCheck, faPlus,
-  faChevronLeft, faChevronRight, faSearch)
+  faChevronLeft, faChevronRight)
 
 function App() {
   const [searchTerm, setSearchterm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
   const [nominatedMovies, setNominatedMovies] = useState([]);
   const [page, setPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
 
   const updatePage = (pageNum) => {
     setPage(pageNum);
   }
 
-  const updateIsLoading = (bool) => setIsLoading(bool);
+  const updateShowSpinner = (bool) => setShowSpinner(bool);
 
-  const [numOfPages, setNumOfPages] = useState(0);
-
-  const updateNumOfPages = (num) => {
-    setNumOfPages(num);
-  }
   const updateSearchTerm = (str) => {
     setSearchterm(str);
   }
@@ -43,26 +37,21 @@ function App() {
     localStorage.removeItem("noms");
   }
 
-  const updateSearchResults = movies => setSearchResults(movies);
-
   useEffect(() => {
     setNominatedMovies(JSON.parse((localStorage.getItem("noms"))) || [])
   }, [])
 
   return (
     <div>
-      <AppHeader updateSearchTerm={updateSearchTerm} searchTerm={searchTerm} updateSearchResults={updateSearchResults}
-        page={page} updatePage={updatePage} updateNumOfPages={updateNumOfPages} numOfPages={numOfPages}
-        updateIsLoading={updateIsLoading}
-      />
+      <AppHeader updateSearchTerm={updateSearchTerm} searchTerm={searchTerm}
+        updatePage={updatePage} updateShowSpinner={updateShowSpinner} />
       <FiveNominationsToast nominatedMovies={nominatedMovies} />
       <Container>
         <Row>
-          <SearchResults searchResults={searchResults} updateNominatedMovies={updateNominatedMovies}
+          <SearchResults updateNominatedMovies={updateNominatedMovies}
             nominatedMovies={nominatedMovies} updatePage={updatePage} page={page}
-            updateSearchResults={updateSearchResults} searchTerm={searchTerm}
-            updateNumOfPages={updateNumOfPages} numOfPages={numOfPages}
-            isLoading={isLoading} />
+            searchTerm={searchTerm} updateShowSpinner={updateShowSpinner}
+            showSpinner={showSpinner} />
           <NominatedMovies nominatedMovies={nominatedMovies}
             clearNominatedMovies={clearNominatedMovies} updateNominatedMovies={updateNominatedMovies}
           />
