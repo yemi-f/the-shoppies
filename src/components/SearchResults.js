@@ -136,7 +136,7 @@ const NavButtons = ({ numOfPages, page, handlePageNumClick, searchResults, hideP
 const NominateButton = ({ updateNominatedMovies, movie, nominatedMovies = [] }) => {
     const handleClick = () => {
         const temp = [...nominatedMovies, movie];
-        localStorage.setItem("noms", JSON.stringify(temp));
+        localStorage.setItem("nominees", JSON.stringify(temp));
         updateNominatedMovies(temp);
     }
 

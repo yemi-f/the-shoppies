@@ -34,11 +34,11 @@ function App() {
 
   const clearNominatedMovies = () => {
     setNominatedMovies([]);
-    localStorage.removeItem("noms");
+    localStorage.removeItem("nominees");
   }
 
   useEffect(() => {
-    setNominatedMovies(JSON.parse((localStorage.getItem("noms"))) || [])
+    setNominatedMovies(JSON.parse((localStorage.getItem("nominees"))) || [])
   }, [])
 
   return (

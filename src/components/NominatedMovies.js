@@ -34,7 +34,7 @@ const NominatedMovies = ({ nominatedMovies = [], updateNominatedMovies, clearNom
 const DeleteButton = ({ movie, updateNominatedMovies, nominatedMovies = [] }) => {
     const removeFromNominatedMovies = () => {
         const temp = nominatedMovies.filter(mov => mov.imdbID !== movie.imdbID);
-        localStorage.setItem("noms", JSON.stringify(temp));
+        localStorage.setItem("nominees", JSON.stringify(temp));
         updateNominatedMovies(temp);
     }
 
