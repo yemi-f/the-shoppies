@@ -12,6 +12,7 @@ const SearchResults = ({
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [numOfPages, setNumOfPages] = useState(0);
+    const [numOfResults, setNumOfResults] = useState(0);
 
     const scroller = Scroll.scroller;
     const scrollToSearchBar = () => {
@@ -39,6 +40,7 @@ const SearchResults = ({
             try {
                 const res = await axios.get(`${process.env.REACT_APP_API_URL}&s=${searchTerm}&page=${page}`);
                 setSearchResults(res.data.Search);
+                setNumOfResults(res.data.totalResults);
                 setNumOfPages(Math.ceil(parseInt(res.data.totalResults) / 10));
                 setIsLoading(false);
                 updateShowSpinner(false);
@@ -59,7 +61,7 @@ const SearchResults = ({
                 : <MoviesTable updateNominatedMovies={updateNominatedMovies}
                     nominatedMovies={nominatedMovies} searchResults={searchResults}
                     searchTerm={searchTerm} numOfPages={numOfPages} page={page}
-                    handlePageNumClick={handlePageNumClick}
+                    handlePageNumClick={handlePageNumClick} numOfResults={numOfResults}
                     isLoading={isLoading} showSpinner={showSpinner}
                 />}
         </Col>
@@ -77,7 +79,7 @@ const LoadingSpinner = () => {
 }
 
 const MoviesTable = ({ searchResults = [], updateNominatedMovies, nominatedMovies, searchTerm, page,
-    numOfPages, handlePageNumClick, isLoading, showSpinner }) => {
+    numOfPages, handlePageNumClick, isLoading, showSpinner, numOfResults }) => {
     return (
         <>
             {showSpinner
@@ -85,7 +87,7 @@ const MoviesTable = ({ searchResults = [], updateNominatedMovies, nominatedMovie
                 : <>
                     {searchResults.length > 0
                         ? <div className="py-2">
-                            <h3>results for "{searchTerm}"</h3>
+                            <h3>{numOfResults} results for "{searchTerm}"</h3>
                             <NavButtons handlePageNumClick={handlePageNumClick}
                                 page={page} numOfPages={numOfPages}
                                 searchResults={searchResults} hidePageNumbering={false} />
