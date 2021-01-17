@@ -3,12 +3,15 @@ import { Col, Button } from 'react-bootstrap';
 import MovieRow from "./MovieRow";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import * as Scroll from 'react-scroll';
 
 const NominatedMovies = ({ nominatedMovies = [], updateNominatedMovies, clearNominatedMovies }) => {
+    const Element = Scroll.Element;
+
     return (
         <Col xs={12} md={6}>
             <div>
-                <h1 className="text-center py-2">Nominations</h1>
+                <Element name="nominations"><h1 className="text-center py-2">Nominations</h1></Element>
                 {nominatedMovies.length === 0
                     ? <p className="lead text-center">You have not nominated any movies</p>
                     : <p className="ml-2 lead">{nominatedMovies.length} of 5 nominated
